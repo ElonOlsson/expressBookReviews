@@ -51,24 +51,32 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
         return res.status(404).json({message: "Book not found"});
     }
 
-    let user = req.user;
-    console.log("req user: ");
-    console.log(user);
+    console.log("session user: ");
+    console.log(req.session.user.username);
+    let user = req.session.user.username;
+
+    const newReview = req.body.review;
+    
     let prevReview = book.reviews[user];
     console.log("prev review: ");
     console.log(prevReview);
-    let newReview = req.body;
-    console.log("new review: ");
-    console.log(newReview);
-
     if (!prevReview){
         book.reviews[user] = newReview;
+
+        console.log("new review: ");
+        console.log(newReview);
+        console.log("all reveiws on book: ", book.title);
+        console.log(book.reviews);    
+        return res.status(200).send({message: "Added review by user: ", user});
     }
     else {
+        book.reviews[user] = newReview;
 
+        console.log("new review: ");
+        console.log(newReview);    
+        return res.status(200).send({message: "Updated review for user: "});
     }
-    
-    return true;
+    return res.status(400).send("Should not be able to get here");
 });
 
 module.exports.authenticated = regd_users;
