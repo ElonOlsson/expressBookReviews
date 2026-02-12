@@ -11,6 +11,17 @@ const doesExist = (username) => {
   return userswithsamename.length > 0;
 };
 
+const getAllBooksPromise =  new Promise((resolve, reject) => {
+    // fake function to simulate fetching data from somewhere else
+    const books2 = books;
+    if (books2) {
+        resolve(books2);
+    }
+    else {
+        reject(new Error("Failed getting books"));
+    }
+});
+
 //testuser, testpw
 public_users.post("/register", (req,res) => {
 
@@ -30,9 +41,15 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-    res.send(JSON.stringify(books,null,4));
-});
+public_users.get('/', function (req, res) {
+    getAllBooksPromise
+        .then(result => {
+            res.send(JSON.stringify(result, null, 4));
+            console.log("test");
+        })
+        .catch(error => console.error("error: ", error.message));
+    }
+);
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
