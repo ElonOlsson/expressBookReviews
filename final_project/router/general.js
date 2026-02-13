@@ -98,17 +98,25 @@ public_users.get('/author/:author',function (req, res) {
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-    let title = req.params.title;
-    var book = Object.values(books).filter((obj) => {
-        return obj.title === title;
+    const getBookByTitle = new Promise((resolve, reject) => {
+        const bookByTitle = Object.values(books).filter((obj) => {
+            return obj.title === req.params.title;
+        })
+        if(bookByTitle) {
+            resolve(bookByTitle);
+        }
+        else {
+            reject(new Error("could not find book with title"));
+        }
     });
-    if(book) {
-        res.send(book);
-    }
-    else {
-        res.status(404).json({message: "could not find books from author " + aut});
-    }
-});
+
+    getBookByTitle
+        .then(result => {
+            res.send(result);
+        })
+        .catch(error => console.error("error: ", error.message)
+    );
+    });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
