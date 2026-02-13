@@ -11,16 +11,6 @@ const doesExist = (username) => {
   return userswithsamename.length > 0;
 };
 
-const getAllBooksPromise =  new Promise((resolve, reject) => {
-    // fake function to simulate fetching data from somewhere else
-    const books2 = books;
-    if (books2) {
-        resolve(books2);
-    }
-    else {
-        reject(new Error("Failed getting books"));
-    }
-});
 
 //testuser, testpw
 public_users.post("/register", (req,res) => {
@@ -35,27 +25,54 @@ public_users.post("/register", (req,res) => {
     else {
       return res.status(404).json({ message: "User already exists!" });
     }
-  }
-  return res.status(404).json({ message: "Unable to register user." });
+}
+return res.status(404).json({ message: "Unable to register user." });
 
 });
 
 // Get the book list available in the shop
 public_users.get('/', function (req, res) {
+    const getAllBooksPromise =  new Promise((resolve, reject) => {
+        // fake function to simulate fetching data from somewhere else
+        var books2 = books;
+        if (books2) {
+            resolve(books2);
+        }
+        else {
+            reject(new Error("Failed getting books"));
+        }
+    });
     getAllBooksPromise
         .then(result => {
             res.send(JSON.stringify(result, null, 4));
-            console.log("test");
         })
-        .catch(error => console.error("error: ", error.message));
-    }
-);
+        .catch(error => console.error("error: ", error.message)
+    );
+});
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-    const isbn = req.params.isbn;
-    res.send(books[isbn]);
- });
+    const getSpecificBookPromise = new Promise((resolve, reject) => {
+        // again, here is where a more sofisticated call to get the data would be called
+        const book = books[req.params.isbn];
+
+        if(book) {
+            resolve(book);
+        }
+        else {
+            reject(new Error("Cannot get book with isbn"));
+        }
+    });
+
+    getSpecificBookPromise
+        .then(result => {
+            res.send(result);
+        })
+        .catch(error => console.error("error: ", error.message)
+    );
+    //const isbn = req.params.isbn;
+    //res.send(books[isbn]);
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
