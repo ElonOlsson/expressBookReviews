@@ -124,10 +124,10 @@ public_users.get('/title/:title', async function (req, res) {
 public_users.get("/review/:isbn",function (req, res) {
     let book = books[req.params.isbn];
 
-    if(book){
+    if(book) {
         return res.status(200).send(JSON.stringify(book.reviews,null,4));
     }
-    else{
+    else {
         return res.status(404).send("No book found with ISBN "+isbn);
     }
 });
