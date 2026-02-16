@@ -1,4 +1,4 @@
-const express = require("express")
+const express = require("express");
 const reg_books = express.Router();
 
 let books = {
@@ -18,5 +18,5 @@ reg_books.get('/', (req, res) => {
     res.json(books);
 });
 
-module.exports=books;
-module.exports=reg_books;
+module.exports.books=books;
+module.exports.reg_books=reg_books;
