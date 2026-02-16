@@ -1,8 +1,11 @@
+const axios = require('axios');
 const express = require('express');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+
+public_users.use(express.json());
 
 const doesExist = (username) => {
   let userswithsamename = users.filter((user) => {
@@ -10,7 +13,6 @@ const doesExist = (username) => {
   });
   return userswithsamename.length > 0;
 };
-
 
 //testuser, testpw
 public_users.post("/register", (req,res) => {
@@ -31,27 +33,18 @@ return res.status(404).json({ message: "Unable to register user." });
 });
 
 // Get the book list available in the shop
-public_users.get('/', function (req, res) {
-    const getAllBooksPromise =  new Promise((resolve, reject) => {
-        // fake function to simulate fetching data from somewhere else
-        var books2 = books;
-        if (books2) {
-            resolve(books2);
-        }
-        else {
-            reject(new Error("Failed getting books"));
-        }
-    });
-    getAllBooksPromise
-        .then(result => {
-            res.send(JSON.stringify(result, null, 4));
+public_users.get('/', async function (req, res) {
+    axios.get('http://localhost:5000/books')
+        .then((responseBooks) => {
+            return res.status(200).send(JSON.stringify(responseBooks.data, null, 4));
         })
-        .catch(error => console.error("error: ", error.message)
-    );
+        .catch( e=> {
+            res.status(404).json({message: "Unable to get books :"});
+        })
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn', async (req, res) => {
     const getSpecificBookPromise = new Promise((resolve, reject) => {
         // again, here is where a more sofisticated call to get the data would be called
         const book = books[req.params.isbn];
@@ -116,7 +109,7 @@ public_users.get('/title/:title',function (req, res) {
         })
         .catch(error => console.error("error: ", error.message)
     );
-    });
+});
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
