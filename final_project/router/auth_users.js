@@ -37,15 +37,15 @@ regd_users.post("/login", (req,res) => {
     };
 //    console.log("auth user:");
 //    console.log(req.session.authorization);
-    return res.status(200).send("User successfully logged in");
+    return res.status(200).send({message: "User successfully logged in"});
   }
   else {
-    return res.status(208).json({ message: "Invalid Login. Check username and password" });
+    return res.status(400).json({ message: "Invalid Login. Check username and password" });
   }
 });
 
 // Add a book review
-regd_users.put("/auth/review/:isbn", (req, res) => {
+regd_users.put("/review/:isbn", (req, res) => {
     let book = books[req.params.isbn];
     if(!book) {
         return res.status(404).json({message: "Book not found"});
@@ -67,7 +67,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
         console.log(newReview);
         console.log("all reveiws on book: ", book.title);
         console.log(book.reviews);    
-        return res.status(200).send({message: "Added review by user: ", user});
+        return res.status(200).send({message: "Added review by user: " + user});
     }
     else {
         book.reviews[user] = newReview;
@@ -79,7 +79,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     return res.status(400).send("Should not be able to get here");
 });
 
-regd_users.delete("/auth/review/:isbn", (req, res) => {
+regd_users.delete("/review/:isbn", (req, res) => {
     let book = books[req.params.isbn];
     if(!book) {
         return res.status(404).json({message: "Book not found"});
